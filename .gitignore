@@ -1,0 +1,23 @@
+# Odoo Core & System Files to IGNORE
+# Ignore the entire core Odoo source code
+/odoo/*
+
+# EXCEPTION: Allow the Custom Addons folder to be tracked
+!/odoo/Custom_addons/
+
+# Allow the specific custom addon folder (if you want to be more specific)
+!/odoo/Custom_addons/app_one/
+
+# Ignore Python specific files
+*.pyc
+__pycache__/
+
+# Ignore database and log files
+.openerp_serverrc
+*.log
+environment
+
+# Ignore common files related to the development environment
+.venv/
+.idea/
+.DS_Store
