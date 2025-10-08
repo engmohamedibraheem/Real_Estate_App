@@ -1,5 +1,3 @@
-from email.policy import default
-
 from dateutil.utils import today
 
 from odoo import models,fields,api
@@ -11,7 +9,7 @@ class Property(models.Model):
     _name='property'
 
     #Create Fields as a Colum
-    name=fields.Char(required=1,default='ex: Mahmoud',size=20)
+    name=fields.Char(required=1,default='Bakous! etc.',size=20)
     description=fields.Text()
     postcode=fields.Char()
     date_availability=fields.Date(default=today())
@@ -24,6 +22,9 @@ class Property(models.Model):
     garden=fields.Boolean()
     garden_area=fields.Integer()
     garden_orientation=fields.Selection([('north','North'),('south','South'),('east','East'),('west','West')],default='north')
+
+    #Relatoonal Fields
+    owner_id=fields.Many2one('owner')
 
     #Data base Tier validation
     _sql_constraints = [
@@ -42,4 +43,20 @@ class Property(models.Model):
     def create(self ,vals):
         res = super(Property,self).create(vals)
         print("inside create method")
+        return res
+
+    @api.model
+    def _search(self, domain, offset=0, limit=None, order=None, access_rights_uid=None):
+        res=super(Property,self)._search(domain, offset=0, limit=None, order=None, access_rights_uid=None)
+        print("inside the search method")
+        return res
+
+    def write(self, vals):
+        res=super(Property,self).write(vals)
+        print("Inside write method")
+        return res
+
+    def unlink(self):
+        res=super(Property,self).unlink()
+        print("Inside unlike method")
         return res

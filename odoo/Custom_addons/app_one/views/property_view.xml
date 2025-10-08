@@ -3,7 +3,7 @@
         <field name="name">property tree</field>
         <field name="model">property</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree multi_edit="True" create="1" edit="1" delete="1">
                 <field name="name"/>
                 <field name="description"/>
                 <field name="postcode"/>
@@ -13,6 +13,7 @@
                 <field name="bedrooms"/>
                 <field name="living_area"/>
                 <field name="facades"/>
+                <field name="owner_id"/>
                 <field name="garage" optional="1"/>
                 <field name="garden" optional="1"/>
                 <field name="garden_area" optional="1"/>
@@ -24,7 +25,7 @@
         <field name="name">property view</field>
         <field name="model">property</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="1" edit="1" delete="1">
                 <sheet>
                     <div class="oe_title">
                         <label for="name"/>
@@ -48,6 +49,7 @@
                             <field name="garden"/>
                             <field name="garden_area"/>
                             <field name="garden_orientation"/>
+                            <field name="owner_id"/>
                         </group>
                     </group>
                 </sheet>

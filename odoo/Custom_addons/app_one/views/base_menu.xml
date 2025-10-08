@@ -8,4 +8,9 @@
     name="Properties"
     parent="real_estate_root_menu"
     />
+    <menuitem
+    id="owner_menu"
+    name="Owners"
+    parent="real_estate_root_menu"
+    />
 </odoo>
