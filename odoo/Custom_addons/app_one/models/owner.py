@@ -7,3 +7,5 @@ class Owner(models.Model):
     name = fields.Char(required=1, default='Mostafa etc.', size=20)
     phone=fields.Char()
     address=fields.Char()
+    #Renation Field
+    property_ids = fields.One2many('property','owner_id')

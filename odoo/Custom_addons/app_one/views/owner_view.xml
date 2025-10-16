@@ -27,6 +27,9 @@
                             <field name="phone" required="1"/>
                             <field name="address"/>
                         </group>
+                        <group>
+                            <field name="property_ids" widget="many2many_tags"/>
+                        </group>
                     </group>
                 </sheet>
             </form>
@@ -38,8 +41,8 @@
     </record>
     <menuitem
             id="owner_menu_item"
-            name="Owners"
-            parent="owner_menu"
+            name="owners"
+            parent="configuration_menu"
             action="owner_action"
     />
 </odoo>

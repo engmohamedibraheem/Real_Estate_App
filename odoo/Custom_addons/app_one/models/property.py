@@ -1,20 +1,25 @@
+from email.policy import default
+
 from dateutil.utils import today
 
 from odoo import models,fields,api
 from odoo.exceptions import ValidationError
-
+from odoo.tools.populate import compute
 
 class Property(models.Model):
     #Table by ORM
     _name='property'
+    _description = 'Property'
+    _inherit = ['mail.thread','mail.activity.mixin']
 
     #Create Fields as a Colum
-    name=fields.Char(required=1,default='Bakous! etc.',size=20)
+    name=fields.Char(required=1,default='Bakous! etc.',size=20,tracking=1)
     description=fields.Text()
     postcode=fields.Char()
     date_availability=fields.Date(default=today())
-    expected_price=fields.Float(required=1,digits=(0,5))
+    expected_price=fields.Float(required=1,digits=(5,2))
     selling_price=fields.Float()
+    diff =fields.Float(compute='_onchange_expected_price',store=1)#readonly=0)
     bedrooms=fields.Integer()
     living_area=fields.Integer()
     facades=fields.Integer()
@@ -22,14 +27,31 @@ class Property(models.Model):
     garden=fields.Boolean()
     garden_area=fields.Integer()
     garden_orientation=fields.Selection([('north','North'),('south','South'),('east','East'),('west','West')],default='north')
-
+    state=fields.Selection([('draft','Draft'),('pending','Pending'),('sold','Sold')],default='draft')
     #Relatoonal Fields
     owner_id=fields.Many2one('owner')
+    tag_ids=fields.Many2many('tag')
+    lines_ids=fields.One2many('property.line','property_id')
+    #Related Field ==> we can use both related attribute and computed attribute
+    owner_phone=fields.Char(related='owner_id.phone') #readonly=0 ,store=1 ==> we can use computed fields
+    owner_address=fields.Char(related='owner_id.address') #readonly=0 ,store=1
 
     #Data base Tier validation
     _sql_constraints = [
         ('unique_name','unique("name")','This name is exist!')
     ]
+    #Compute Method
+    @api.depends('expected_price','selling_price','owner_id.phone')
+    def _compute_diff(self):
+        for rec in self:
+            print("inside compute difference")
+            rec.diff=rec.expected_price-rec.selling_price
+
+    @api.onchange('expected_price','selling_price','owner_id.phone')
+    def _onchange_expected_price(self):
+        for rec in self:
+            rec.diff=rec.expected_price - rec.selling_price
+        print("inside _onchange_expected_price method")
 
     #logic Validation
     @api.constrains('expected_price')
@@ -60,3 +82,30 @@ class Property(models.Model):
         res=super(Property,self).unlink()
         print("Inside unlike method")
         return res
+
+    #Status bar function
+    def action_draft(self):
+        for rec in self:
+            print("inside draft action")
+            rec.state='draft'
+            # rec.write({
+            #     'state':'draft'
+            # })
+    def action_pending(self):
+        for rec in self:
+            print("inside Pending action")
+            rec.write({
+                'state':'pending'
+            })
+    def action_sold(self):
+        for rec in self:
+            print("inside sold action")
+            rec.state='sold'
+
+#Model To be Notebook
+class PropertyLine(models.Model):
+    _name='property.line'
+
+    Area = fields.Float()
+    Description = fields.Char()
+    property_id=fields.Many2one('property')
