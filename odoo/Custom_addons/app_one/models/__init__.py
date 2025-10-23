@@ -4,3 +4,4 @@ from . import tag
 from . import account_move
 from . import tag_inheritance
 from . import res_partner
+from . import building

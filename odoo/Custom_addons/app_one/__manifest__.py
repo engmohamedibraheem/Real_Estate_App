@@ -14,6 +14,8 @@
         'views/tag_view.xml',
         'views/account_move_view_inherit.xml',
         'views/res_partner_view.xml',
+        'views/building_view.xml',
+        'reports/property_report.xml',
     ],
     'assets':{
       'web.assets_backend':['app_one/static/src/css/property.css'],
