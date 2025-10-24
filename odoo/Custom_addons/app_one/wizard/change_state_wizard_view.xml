@@ -1,0 +1,40 @@
+<odoo>
+    <record id="change_state_wizard_tree_view" model="ir.ui.view">
+        <field name="name">Change State Wizard tree</field>
+        <field name="model">change.state</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="property_id"/>
+                <field name="state"/>
+                <field name="reason"/>
+            </tree>
+        </field>
+    </record>
+    <record id="change_state_wizard_form_view" model="ir.ui.view">
+        <field name="name">Change State Wizard view</field>
+        <field name="model">change.state</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="property_id" invisible="1"/>
+                            <field name="state" required="1"/>
+                            <field name="reason" required="1"/>
+                        </group>
+                        <footer>
+                            <button name="confirm_action" type="object" string="Confirm" class="btn-primary"/>
+                            <button string="Cancel" special="cancel" class="btn-danger"/>
+                        </footer>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="change_state_wizard_action" model="ir.actions.act_window">
+        <field name="name">Change State Wizard</field>
+        <field name="res_model">change.state</field>
+        <field name="target">new</field>
+        <field name="view_mode">form</field>
+    </record>
+</odoo>

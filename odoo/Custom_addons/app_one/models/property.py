@@ -14,6 +14,7 @@ class Property(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     # Create Fields as a Colum
+    ref=fields.Char(default="New",readonly=1)
     name = fields.Char(required=1, default='Bakous! etc.', size=20, tracking=1)
     description = fields.Text()
     postcode = fields.Char()
@@ -22,7 +23,7 @@ class Property(models.Model):
     is_late=fields.Boolean()
     expected_price = fields.Float(required=1, digits=(5, 2))
     selling_price = fields.Float()
-    diff = fields.Float(compute='_onchange_expected_price', store=1)  # readonly=0)
+    diff = fields.Float(compute='_onchange_expected_price', store=1)  # readonly=0
     bedrooms = fields.Integer()
     living_area = fields.Integer()
     facades = fields.Integer()
@@ -71,7 +72,8 @@ class Property(models.Model):
     @api.model_create_multi
     def create(self, vals):
         res = super(Property, self).create(vals)
-        print("inside create method")
+        if res.ref == 'New':
+            res.ref=self.env['ir.sequence'].next_by_code('property_Seq')
         return res
 
     @api.model
@@ -93,7 +95,7 @@ class Property(models.Model):
     # Status bar function
     def action_draft(self):
         for rec in self:
-            print("inside draft action")
+            rec.create_history_record(rec.state,'draft')
             rec.state = 'draft'
             # rec.write({
             #     'state':'draft'
@@ -101,19 +103,20 @@ class Property(models.Model):
 
     def action_pending(self):
         for rec in self:
-            print("inside Pending action")
+            rec.create_history_record(rec.state,'pending')
             rec.write({
                 'state': 'pending'
             })
 
     def action_sold(self):
         for rec in self:
-            print("inside sold action")
+            rec.create_history_record(rec.state,'sold')
             rec.state = 'sold'
 
     def action_close(self):
         for rec in self:
-           rec.state = 'closed'
+            rec.create_history_record(rec.state, 'closed')
+            rec.state = 'closed'
 
     #cron job
     def check_expected_selling_date(self):
@@ -121,6 +124,20 @@ class Property(models.Model):
         for rec in property_ids:
             if rec.expected_selling_date and rec.expected_selling_date <fields.date.today():
                 rec.is_late=True
+
+    def create_history_record(self,old_state,new_state,reason=" "):
+        for rec in self:
+            rec.env['property.history'].create({
+                'user_id': rec.env.uid,
+                'property_id':rec.id,
+                'old_state': old_state,
+                'new_state': new_state,
+                'reason': reason,
+            })
+    def change_open_state_wizard(self):
+        action=self.env['ir.actions.actions']._for_xml_id('app_one.change_state_wizard_action')
+        action['context']={'default_property_id':self.id}
+        return action
 
 # Model To be Notebook
 class PropertyLine(models.Model):
